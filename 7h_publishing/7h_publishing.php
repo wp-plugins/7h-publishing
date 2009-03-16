@@ -31,6 +31,7 @@ function init_7h_publishing() {
 
 	add_action('admin_menu', 'about_page_7h_publishing');
 	add_action('admin_menu', 'config_page_7h_publishing');
+	add_action('admin_menu', 'link_to_admin_7h_publishing');
 }
 add_action('init', 'init_7h_publishing');
 
@@ -54,6 +55,12 @@ function config_page_7h_publishing() {
 function about_page_7h_publishing() {
 	if (function_exists('add_submenu_page')) {
 		add_submenu_page('plugins.php', __('About 7h Publishing'), __('About 7h Publishing'), 'manage_options', '7h-publishing-about', 'about_7h_publishing');
+	}
+}
+
+function link_to_admin_7h_publishing() {
+	if (function_exists('add_submenu_page')) {
+		add_submenu_page('plugins.php', __('7h Publishing Admin'), __('7h Publishing Admin'), 'manage_options', '7h-publishing-admin', 'go_to_admin_7h_publishing');
 	}
 }
 
@@ -98,17 +105,25 @@ function about_7h_publishing() {
 }
 
 
+function go_to_admin_7h_publishing() {
+	global $site_name_7h;
+	echo "<script>window.open('http://" . $site_name_7h . ".7h.com/admin/email_list/');</script>";
+	echo "<br><br>If the popup window did not open, <a href='http://" . $site_name_7h . ".7h.com/admin/email_list/' target='_blank'>click here</a> to go to your 7h administrative section.";
+}
+
+
 function publish_blog_post_7h_publishing() {
 	create_article_7h_publishing();
 
-	if ($_POST['publish_to_7h']) {
-		send_most_recently_created_article_7h_publishing();
-
+	if ($_POST['publish_to_7h'] == "true") {
+		send_most_recently_created_article_7h_publishing(true);
 		$_SESSION['display_7h_success_message'] = "<script language='javascript'>alert('Your post has been published to your 7h site and mailing list.');</script>";
 	}
 	else {
+		send_most_recently_created_article_7h_publishing(false);
 		$_SESSION['display_7h_success_message'] = "<script language='javascript'>alert('Your 7h site has been updated to include this post.');</script>";
 	}
+
 }
 
 function create_article_7h_publishing() {
@@ -173,14 +188,18 @@ function create_article_7h_publishing() {
 	}
 }
 
-function send_most_recently_created_article_7h_publishing() {
+function send_most_recently_created_article_7h_publishing($email_article) {
 	global $site_name_7h;
 
 	$vars = array();
 	$vars["title"] = $_POST["post_title"];
 	$vars["wordpress_7h"] = true;
 	$vars["confirmed"] = "true";
-	$vars["email"] = "true";
+
+	if ($email_article)
+		$vars["email"] = "true";
+
+	$vars["web"] = "true";
 
 	$formatted_post_vars = get_formatted_post_vars_7h_publishing($vars);
 
@@ -239,15 +258,18 @@ function show_publish_option_7h_publishing() {
 	echo <<<html
 	<script language="javascript">
 		var publishing_button_7h_html = "<div style='float: left; padding-left: 10px; padding-top: 3px;'>" +
-										"<table cellpadding='0' cellspacing='0'><tr><td style='font-size: 11px;'>" +
-											"<input type='checkbox' name='publish_to_7h' style='width: auto;'> Publish to&nbsp;</td>" +
-											"<td><img src='" + image_directory + "7h_logo.gif' alt='7h'></td></tr>" +
-										"</table></div>";
+										"<table cellpadding='0' cellspacing='0'><tr><td valign='top' style='padding-right: 5px;'>" +
+											"<img src='" + image_directory + "7h_logo.gif' alt='7h'></td>" +
+											"<td style='font-size: 11px;'>Publish to:<br><input type='radio' name='publish_to_7h' value='' style='width: auto;'> Web only<br>" +
+											"<input type='radio' name='publish_to_7h' value='true' style='width: auto;' checked> Web and Email</td>" +
+											"</tr>" +
+										"</table></div><div class='clear'></div>";
 
 		function add_7h_publishing_button() {
 			var publishing_div = document.getElementById("major-publishing-actions");
 			if (publishing_div) {
-				insert_7h_button_before_publish_button(publishing_div);
+				//insert_7h_button_before_publish_button(publishing_div);
+				insert_7h_button_at_far_left(publishing_div);
 			}
 			else
 				setTimeout("add_7h_publishing_button();", 250);
@@ -262,6 +284,15 @@ function show_publish_option_7h_publishing() {
 			var html_starting_from_publish_button = publishing_div.innerHTML.substr(publish_button_index);
 
 			publishing_div.innerHTML = html_before_publish_button + publishing_button_7h_html + html_starting_from_publish_button;
+		}
+
+		function insert_7h_button_at_far_left(publishing_div) {
+			//var publish_button_index = publishing_div.innerHTML.indexOf('<div id="publishing-action">');
+
+			//var html_before_publish_button = publishing_div.innerHTML.substr(0, publish_button_index);
+			//var html_starting_from_publish_button = publishing_div.innerHTML.substr(publish_button_index);
+
+			publishing_div.innerHTML = publishing_button_7h_html + publishing_div.innerHTML;
 		}
 
 		/*

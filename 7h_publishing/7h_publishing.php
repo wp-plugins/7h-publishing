@@ -82,7 +82,7 @@ function conf_7h_publishing() {
 	else {
 ?>
 <h2><?php _e('7H Configuration'); ?></h2><br>
-With the 7h Publishing plugin you can send your blog post to your 7h mailing list. If you don't have a 7h site, <a href="http://7h.com/new_site/?link_to=red" target="_blank">click here</a> to create one for free.</a>
+With the 7h Publishing plugin you can send your blog post to your 7h mailing list. If you don't have a 7h site, <a href="http://7h.com/new_site/?link_to=step1&link_to_parameters=newsletter" target="_blank">click here</a> to create one for free.</a>
 <br>
 <form action="" method="post" id="7h-publishing-config">
 Enter your 7h site name <input name="cname" value="<?php echo get_option('7h_publishing_cname'); ?>" style="text-align: right;">.7h.com<br>
@@ -100,7 +100,7 @@ For example if your 7h site is "mysite.7h.com" then enter "mysite" in this box.<
 function about_7h_publishing() {
 	?>
 	<h2><?php _e('About 7H'); ?></h2><br>
-	With 7h you can easily create your own article-based website for free and email these articles to your mailing list.  <a href="http://7h.com/new_site/?link_to=red" target="_blank">Click here</a> to start.
+	With 7h you can easily create your own article-based website for free and email these articles to your mailing list.  <a href="http://7h.com/new_site/?link_to=step1&link_to_parameters=newsletter" target="_blank">Click here</a> to create your 7h site.
 	<?php
 }
 
